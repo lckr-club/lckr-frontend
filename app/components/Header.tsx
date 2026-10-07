@@ -7,7 +7,10 @@ import LckrLogo from "@/public/lckr-logo.png";
 
 export default function Header() {
   const pathname = usePathname();
-
+  
+  if (pathname === "/login") {
+    return null;
+  }
   return (
     <header className="border-b border-[#23262c] bg-[#07080a] text-white">
       <div className="mx-auto grid h-[68px] w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6">
