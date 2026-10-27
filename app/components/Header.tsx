@@ -12,7 +12,7 @@ export default function Header() {
     return null;
   }
   return (
-    <header className="border-b border-[#23262c] bg-[#07080a] text-white">
+    <header className="border-b border-ink-line bg-ink text-white">
       <div className="mx-auto grid h-[68px] w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-6">
         <Link href="/" className="flex items-center gap-3">
           <Image src={LckrLogo} alt="" className="h-14 w-auto"  />
@@ -25,12 +25,12 @@ export default function Header() {
               <Link
                 href="/"
                 className={`relative transition-colors ${
-                  pathname === "/" ? "text-[#90C156]" : "text-white/70 hover:text-white"
+                  pathname === "/" ? "text-brand" : "text-white/70 hover:text-white"
                 }`}
               >
                 Início
                 {pathname === "/" && (
-                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-[#90C156]" />
+                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-brand" />
                 )}
               </Link>
             </li>
@@ -39,12 +39,12 @@ export default function Header() {
               <Link
                 href="/coaches"
                 className={`relative transition-colors ${
-                  pathname.startsWith("/coaches") ? "text-[#90C156]" : "text-white/70 hover:text-white"
+                  pathname.startsWith("/coaches") ? "text-brand" : "text-white/70 hover:text-white"
                 }`}
               >
                 Professores
                 {pathname.startsWith("/coaches") && (
-                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-[#90C156]" />
+                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-brand" />
                 )}
               </Link>
             </li>
@@ -53,12 +53,12 @@ export default function Header() {
               <Link
                 href="/horas"
                 className={`relative transition-colors ${
-                  pathname.startsWith("/horas") ? "text-[#90C156]" : "text-white/70 hover:text-white"
+                  pathname.startsWith("/horas") ? "text-brand" : "text-white/70 hover:text-white"
                 }`}
               >
                 Horas
                 {pathname.startsWith("/horas") && (
-                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-[#90C156]" />
+                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-brand" />
                 )}
               </Link>
             </li>
@@ -67,12 +67,12 @@ export default function Header() {
               <Link
                 href="/folha"
                 className={`relative transition-colors ${
-                  pathname.startsWith("/folha") ? "text-[#90C156]" : "text-white/70 hover:text-white"
+                  pathname.startsWith("/folha") ? "text-brand" : "text-white/70 hover:text-white"
                 }`}
               >
                 Folha
                 {pathname.startsWith("/folha") && (
-                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-[#90C156]" />
+                  <span className="absolute -bottom-1.5 left-0 h-px w-full bg-brand" />
                 )}
               </Link>
             </li>

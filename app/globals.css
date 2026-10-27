@@ -3,4 +3,10 @@
 @theme {
   --color-gray-custom: #BBBBBB;
   --color-green-logo: #74A43C;
+
+  --color-ink: #07080a;
+  --color-ink-line: #23262c;
+  --color-brand: #90C156;
+  --color-brand-dark: #74A43C;
+  --color-brand-text: #3B5E18;
 }
