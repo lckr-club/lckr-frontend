@@ -2,12 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import LckrLogo from "@/public/lckr-logo.png";
 
 export default function Header() {
   const pathname = usePathname();
-  
+  const router = useRouter();
+
+  // Quem nao fez login volta para a tela de login
+  useEffect(() => {
+    if (pathname !== "/login" && !localStorage.getItem("usuario")) {
+      router.replace("/login");
+    }
+  }, [pathname, router]);
+
+  function sair() {
+    localStorage.removeItem("usuario");
+    router.replace("/login");
+  }
+
+  // Esconder esse header na tela de login
   if (pathname === "/login") {
     return null;
   }
@@ -79,7 +94,13 @@ export default function Header() {
           </ul>
         </nav>
 
-        <div />
+        <button
+          type="button"
+          onClick={sair}
+          className="cursor-pointer justify-self-end text-sm font-medium text-white/70 transition-colors hover:text-white"
+        >
+          Sair
+        </button>
       </div>
     </header>
   );
