@@ -1,8 +1,8 @@
 import type { Folha, ResumoMes } from "@/types/folha";
-import { API } from "@/lib/api";
+import { API, fetchComToken } from "@/lib/api";
 
 export async function buscarFolha(mes: string) {
-  const res = await fetch(`${API}/Folha/CalcularFolha/${mes}`);
+  const res = await fetchComToken(`${API}/Folha/CalcularFolha/${mes}`);
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
@@ -12,7 +12,7 @@ export async function buscarFolha(mes: string) {
 }
 
 export async function buscarResumo(mes: string) {
-  const res = await fetch(`${API}/Folha/ResumoMes?mes=${mes}`);
+  const res = await fetchComToken(`${API}/Folha/ResumoMes?mes=${mes}`);
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
@@ -23,7 +23,7 @@ export async function buscarResumo(mes: string) {
 
 // Se ainda tiver pagamento pendente, a API não fecha e devolve um aviso pra secretária confirmar
 export async function fecharFolha(mes: string, confirmar: boolean) {
-  const res = await fetch(`${API}/Periodo/FecharPeriodo/${mes}?confirmar=${confirmar}`, { method: "POST" });
+  const res = await fetchComToken(`${API}/Periodo/FecharPeriodo/${mes}?confirmar=${confirmar}`, { method: "POST" });
   if (!res.ok) {
     const corpo = await res.json();
     if (corpo.requerConfirmacao) return corpo.mensagem;
@@ -33,9 +33,19 @@ export async function fecharFolha(mes: string, confirmar: boolean) {
 }
 
 export async function reabrirFolha(mes: string) {
-  const res = await fetch(`${API}/Periodo/ReabrirPeriodo/${mes}`, { method: "PUT" });
+  const res = await fetchComToken(`${API}/Periodo/ReabrirPeriodo/${mes}`, { method: "PUT" });
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
   }
+}
+
+// formato é "Pdf" ou "Excel", que é o final do nome do endpoint
+export async function exportarFolha(mes: string, formato: "Pdf" | "Excel") {
+  const res = await fetchComToken(`${API}/Folha/Exportar${formato}/${mes}`);
+  if (!res.ok) {
+    const corpo = await res.json();
+    throw new Error(corpo.mensagem);
+  }
+  return res.blob();
 }

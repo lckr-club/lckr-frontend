@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import type { Folha } from "@/types/folha";
-import { API, mensagemDeErro } from "@/lib/api";
+import { mensagemDeErro } from "@/lib/api";
 import { MESES, formatarHoras, formatarMoeda } from "@/lib/formatar";
-import { buscarFolha, fecharFolha as fecharFolhaService, reabrirFolha as reabrirFolhaService } from "@/services/folha";
+import { buscarFolha, exportarFolha, fecharFolha as fecharFolhaService, reabrirFolha as reabrirFolhaService } from "@/services/folha";
 
 function mesAtual() {
   const hoje = new Date();
@@ -69,6 +69,21 @@ export default function FolhaPage() {
     setAviso(null);
   }
 
+  async function baixar(formato: "Pdf" | "Excel") {
+    setErro("");
+    try {
+      const arquivo = await exportarFolha(mes, formato);
+      // cria um link temporário pro arquivo e clica nele pra baixar
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(arquivo);
+      link.download = formato === "Pdf" ? `folha-${mes}.pdf` : `folha-${mes}.xlsx`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (e) {
+      setErro(mensagemDeErro(e));
+    }
+  }
+
   async function reabrirFolha() {
     setErro("");
     try {
@@ -89,18 +104,20 @@ export default function FolhaPage() {
           </p>
         </div>
         <div className="flex gap-4">
-          <a
-            href={`${API}/Folha/ExportarPdf/${mes}`}
-            className="border border-gray-400 py-1 px-3 rounded-lg text-gray-700 font-semibold hover:bg-neutral-50"
+          <button
+            type="button"
+            onClick={() => baixar("Pdf")}
+            className="cursor-pointer border border-gray-400 py-1 px-3 rounded-lg text-gray-700 font-semibold hover:bg-neutral-50"
           >
             Exportar PDF
-          </a>
-          <a
-            href={`${API}/Folha/ExportarExcel/${mes}`}
-            className="border border-gray-400 py-1 px-3 rounded-lg text-gray-700 font-semibold hover:bg-neutral-50"
+          </button>
+          <button
+            type="button"
+            onClick={() => baixar("Excel")}
+            className="cursor-pointer border border-gray-400 py-1 px-3 rounded-lg text-gray-700 font-semibold hover:bg-neutral-50"
           >
             Exportar Excel
-          </a>
+          </button>
           {folha?.statusPeriodo === "fechado" ? (
             <button type="button" onClick={reabrirFolha} className="cursor-pointer py-1 px-3 rounded-lg border border-gray-400 text-gray-700 font-semibold hover:bg-neutral-50">
               Reabrir folha

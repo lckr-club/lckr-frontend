@@ -2,12 +2,10 @@
 import Image from "next/image";
 import LckrLogo from "@/public/lckr-logo.png";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { mensagemDeErro } from "@/lib/api";
 import { login } from "@/services/auth";
 
 export default function Login() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
@@ -18,7 +16,8 @@ export default function Login() {
     try {
       const usuario = await login(email, senha);
       localStorage.setItem("usuario", JSON.stringify(usuario));
-      router.replace("/");
+      // recarrega a página pra tudo começar a usar o token novo
+      window.location.replace("/");
     } catch (e) {
       setErro(mensagemDeErro(e));
     }

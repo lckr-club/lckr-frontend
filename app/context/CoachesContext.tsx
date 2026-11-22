@@ -30,6 +30,8 @@ export function CoachesProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     async function carregarCoaches() {
+      // sem login ainda não tem token, então não busca
+      if (!localStorage.getItem("usuario")) return;
       try {
         const lista = await buscarCoachesService();
         setCoaches(lista);

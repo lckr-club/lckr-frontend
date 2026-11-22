@@ -1,5 +1,5 @@
 import type { Aula } from "@/types/aula";
-import { API } from "@/lib/api";
+import { API, fetchComToken } from "@/lib/api";
 
 type NovaAula = {
   dataAula: string;
@@ -11,7 +11,7 @@ type NovaAula = {
 };
 
 export async function buscarAulas(inicio: string, fim: string) {
-  const res = await fetch(`${API}/Aula/ListarAulas?inicio=${inicio}&fim=${fim}`);
+  const res = await fetchComToken(`${API}/Aula/ListarAulas?inicio=${inicio}&fim=${fim}`);
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
@@ -21,7 +21,7 @@ export async function buscarAulas(inicio: string, fim: string) {
 }
 
 export async function criarAula(dados: NovaAula) {
-  const res = await fetch(`${API}/Aula/CriarAula`, {
+  const res = await fetchComToken(`${API}/Aula/CriarAula`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(dados),
@@ -35,7 +35,7 @@ export async function criarAula(dados: NovaAula) {
 }
 
 export async function marcarRealizada(id: string) {
-  const res = await fetch(`${API}/Aula/AlterarStatusAula/${id}?status=realizada`, { method: "PUT" });
+  const res = await fetchComToken(`${API}/Aula/AlterarStatusAula/${id}?status=realizada`, { method: "PUT" });
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
@@ -43,7 +43,7 @@ export async function marcarRealizada(id: string) {
 }
 
 export async function excluirAula(id: string) {
-  const res = await fetch(`${API}/Aula/ExcluirAula/${id}`, { method: "DELETE" });
+  const res = await fetchComToken(`${API}/Aula/ExcluirAula/${id}`, { method: "DELETE" });
   if (!res.ok) {
     const corpo = await res.json();
     throw new Error(corpo.mensagem);
