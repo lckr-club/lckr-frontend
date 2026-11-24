@@ -72,7 +72,7 @@ export default function CalendarioHoras({ ano, mes, aulas, onSalvar }: Props) {
               )}
 
               {doDia.slice(0, 3).map((aula) => (
-                <span key={aula.id} className="w-full truncate rounded-sm bg-brand/25 px-1.5 py-0.5 text-xs text-brand-text">
+                <span key={aula.id} className={`w-full truncate rounded-sm px-1.5 py-0.5 text-xs ${aula.status === "realizada" ? "bg-brand/25 text-brand-text" : "bg-neutral-200 text-neutral-600"}`}>
                   {aula.horaInicio} {aula.nomeCoach.split(" ")[0]}
                 </span>
               ))}

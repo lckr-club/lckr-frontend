@@ -42,6 +42,19 @@ export async function marcarRealizada(id: string) {
   }
 }
 
+// troca o coach da aula. A API guarda quem estava previsto antes
+export async function substituirCoach(id: string, cpfSubstituto: string) {
+  const res = await fetchComToken(`${API}/Aula/SubstituirCoach/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cpfSubstituto }),
+  });
+  if (!res.ok) {
+    const corpo = await res.json();
+    throw new Error(corpo.mensagem);
+  }
+}
+
 export async function excluirAula(id: string) {
   const res = await fetchComToken(`${API}/Aula/ExcluirAula/${id}`, { method: "DELETE" });
   if (!res.ok) {

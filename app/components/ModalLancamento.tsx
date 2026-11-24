@@ -7,7 +7,7 @@ import { useCoaches } from "../context/CoachesContext";
 import type { Aula } from "@/types/aula";
 import { mensagemDeErro } from "@/lib/api";
 import { DIAS_DA_SEMANA, dataDeHoje } from "@/lib/formatar";
-import { criarAula, excluirAula, marcarRealizada } from "@/services/aula";
+import { criarAula, excluirAula, marcarRealizada, substituirCoach } from "@/services/aula";
 
 const HORARIOS = [
   { inicio: "06:00", fim: "07:00" },
@@ -71,6 +71,29 @@ export default function ModalLancamento({ data, aulas, onClose, onSalvar }: Prop
     }
   }
 
+  // o coach previsto faltou e outro deu a aula no lugar dele
+  async function substituir(aula: Aula, cpf: string) {
+    if (!cpf) return;
+    setErro("");
+    try {
+      await substituirCoach(aula.id, cpf);
+      onSalvar();
+    } catch (e) {
+      setErro(mensagemDeErro(e));
+    }
+  }
+
+  // aula lançada antes do dia: depois que ela acontece, marca como realizada pra entrar na folha
+  async function concluir(aula: Aula) {
+    setErro("");
+    try {
+      await marcarRealizada(aula.id);
+      onSalvar();
+    } catch (e) {
+      setErro(mensagemDeErro(e));
+    }
+  }
+
   return (
     <Modal isOpen onClose={onClose}>
       <div className="w-[36rem] max-w-[calc(100vw-2rem)]">
@@ -98,19 +121,44 @@ export default function ModalLancamento({ data, aulas, onClose, onSalvar }: Prop
               <div key={horario.inicio} className="flex items-center gap-4 border-b border-neutral-100 py-3 last:border-0">
                 <span className="w-12 text-sm font-semibold text-neutral-900">{horario.inicio}</span>
 
-                <div className="flex flex-1 flex-wrap items-center gap-2">
+                <div className="flex flex-1 flex-col gap-2">
                   {doHorario.map((aula) => (
-                    <span key={aula.id} className="inline-flex items-center gap-2 rounded-sm bg-brand/25 px-2 py-1 text-xs font-medium text-brand-text">
-                      {aula.nomeCoach}
-                      <button
-                        type="button"
-                        aria-label={`Remover ${aula.nomeCoach}`}
-                        onClick={() => remover(aula)}
-                        className="cursor-pointer text-brand-text/70 hover:text-brand-text"
-                      >
-                        <FontAwesomeIcon icon={faXmark} />
-                      </button>
-                    </span>
+                    <div key={aula.id} className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className={`flex items-center gap-2 rounded-sm px-2 py-1 font-medium ${aula.status === "realizada" ? "bg-brand/25 text-brand-text" : "bg-neutral-200 text-neutral-600"}`}>
+                        {aula.nomeCoach}
+                        {aula.nomeCoachPrevisto && ` (no lugar de ${aula.nomeCoachPrevisto.split(" ")[0]})`}
+                        <button
+                          type="button"
+                          aria-label={`Remover ${aula.nomeCoach}`}
+                          onClick={() => remover(aula)}
+                          className="cursor-pointer hover:text-black"
+                        >
+                          <FontAwesomeIcon icon={faXmark} />
+                        </button>
+                      </span>
+
+                      {aula.status === "agendada" && <span className="text-neutral-500">agendada</span>}
+
+                      {aula.status === "agendada" && data <= dataDeHoje() && (
+                        <button type="button" onClick={() => concluir(aula)} className="cursor-pointer font-medium text-brand-text hover:underline">
+                          Marcar como realizada
+                        </button>
+                      )}
+
+                      {livres.length > 0 && (
+                        <select
+                          aria-label={`Trocar ${aula.nomeCoach} por outro coach`}
+                          value=""
+                          onChange={(e) => substituir(aula, e.target.value)}
+                          className="rounded-md border border-neutral-300 px-2 py-1 text-neutral-700 focus:border-brand focus:outline-none"
+                        >
+                          <option value="">Trocar por...</option>
+                          {livres.map((c) => (
+                            <option key={c.cpf} value={c.cpf}>{c.nome}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                   ))}
 
                   {livres.length > 0 && (
@@ -118,7 +166,7 @@ export default function ModalLancamento({ data, aulas, onClose, onSalvar }: Prop
                       aria-label={`Adicionar coach às ${horario.inicio}`}
                       value=""
                       onChange={(e) => adicionar(horario.inicio, horario.fim, e.target.value)}
-                      className="rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-700 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+                      className="w-fit rounded-md border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-700 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
                     >
                       <option value="">+ coach</option>
                       {livres.map((c) => (
